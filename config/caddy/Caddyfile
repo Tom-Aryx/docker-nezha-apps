@@ -1,0 +1,8 @@
+:3002 {
+    reverse_proxy {
+        to https://localhost:443
+        transport http {
+            tls tls_insecure_skip_verify
+        }
+    }
+}
