@@ -11,7 +11,7 @@ if [[ $1 ]]; then
         git clone $1 /app/nezha/backup
     fi
 
-    sqlite3 /dashboard/data/sqlite.db ".dump" > /app/nezha/backup/backup.sql
+    sqlite3 /app/nezha/data/sqlite.db ".dump" > /app/nezha/backup/backup.sql
 
     cd /app/nezha/backup
     git config user.name ${GITHUB_NAME}

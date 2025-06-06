@@ -7,7 +7,7 @@ admintemplate: admin-dist
 jwtsecretkey: -jwt-secret-key-
 agentsecretkey: -agent-secret-key-
 listenport: 8080
-listenhost: "0.0.0.0"
+listenhost: ""
 installhost: "-install-host-"
 tls: false
 location: Asia/Shanghai

@@ -1,9 +1,9 @@
 FROM freshrss/freshrss:alpine
 
-RUN apk add curl git iproute2 openrc openssl sed sqlite supervisor unzip util-linux wget && \
-    apk cache clean -y && \
+RUN apk add curl git grep iproute2 openrc openssl sed sqlite supervisor unzip util-linux wget && \
+    apk cache clean && \
     rm -rf /var/cache/apk/* && \
-    touch /run/openrc/softlevel && \
+    mkdir -p /run/openrc && touch /run/openrc/softlevel && \
     mkdir -p /app/nezha/data && cd /app/nezha && \
     wget -q https://github.com/nezhahq/nezha/releases/download/$(curl -s https://api.github.com/repos/nezhahq/nezha/releases | grep -m 1 -oP '"tag_name":\s*"\K[^"]+')/dashboard-linux-amd64.zip && \
     unzip dashboard-linux-amd64.zip && chmod +x dashboard-linux-amd64 && rm dashboard-linux-amd64.zip && \
@@ -13,7 +13,7 @@ RUN apk add curl git iproute2 openrc openssl sed sqlite supervisor unzip util-li
     mkdir -p /app/ntfy/data && cd /app/ntfy && \
     export NTFY_VERSION="$(curl -s https://api.github.com/repos/binwiederhier/ntfy/releases | grep -m 1 -oP '"tag_name":\s*"v\K[^"]+')" && \
     wget -q https://github.com/binwiederhier/ntfy/releases/download/v${NTFY_VERSION}/ntfy_${NTFY_VERSION}_linux_amd64.tar.gz && \
-    tar -xzf ntfy_${NTFY_VERSION}_linux_amd64.tar.gz && mv ntfy_${NTFY_VERSION}_linux_amd64 ntfy && chmod +x ntfy && rm -r ntfy_${NTFY_VERSION}_linux_amd64 && \
+    tar -xzf ntfy_${NTFY_VERSION}_linux_amd64.tar.gz && mv ntfy_${NTFY_VERSION}_linux_amd64/ntfy ntfy && chmod +x ntfy && rm -r ntfy_${NTFY_VERSION}_linux_amd64.tar.gz ntfy_${NTFY_VERSION}_linux_amd64 && \
     mkdir -p /app/AdGuard/cert && cd /app/AdGuard && \
     wget -q https://github.com/AdguardTeam/AdGuardHome/releases/download/$(curl -s https://api.github.com/repos/AdguardTeam/AdGuardHome/releases | grep -m 1 -oP '"tag_name":\s*"\K[^"]+')/AdGuardHome_linux_amd64.tar.gz && \
     tar -xzf AdGuardHome_linux_amd64.tar.gz && rm AdGuardHome_linux_amd64.tar.gz && mv ./AdGuardHome/AdGuardHome ./AdGuard && chmod +x ./AdGuard && rm -r ./AdGuardHome && \
@@ -26,9 +26,9 @@ COPY ./config   /app/config
 COPY ./scripts  /app/scripts
 COPY ./docker-scripts/entrypoint.sh /app/entrypoint.sh
 
-EXPOSE 80 3000 3001 3002 8080
+RUN chmod +x /app/entrypoint.sh
 
-CMD chmod +x /app/entrypoint.sh && \
-    /app/entrypoint.sh && \
-    ([ -z "$CRON_MIN" ] || crond -d 6) && \
-    exec httpd -D FOREGROUND $([ -n "$OIDC_ENABLED" ] && [ "$OIDC_ENABLED" -ne 0 ] && echo '-D OIDC_ENABLED')
+EXPOSE 3000 3001 3002 3003 8080
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD [""]
