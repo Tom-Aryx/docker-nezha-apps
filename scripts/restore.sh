@@ -1,23 +1,25 @@
 #!/usr/bin/env sh
 
+DIR_NEZHA="/app/nezha"
+
 if [[ $1 ]]; then
 
-    if [ ! -e /app/nezha/backup ]; then
-        mkdir -p /app/nezha/backup
+    if [ ! -e ${DIR_NEZHA}/backup ]; then
+        mkdir -p ${DIR_NEZHA}/backup
     fi
 
-    if [ ! -e /app/nezha/backup/backup.sql ]; then
-        rm /app/nezha/backup/* /app/nezha/backup/.*
-        git clone $1 /app/nezha/backup
+    if [ ! -e ${DIR_NEZHA}/backup/backup.sql ]; then
+        rm ${DIR_NEZHA}/backup/* ${DIR_NEZHA}/backup/.*
+        git clone $1 ${DIR_NEZHA}/backup
     else
-        cd /app/nezha/backup && git pull
+        cd ${DIR_NEZHA}/backup && git pull
     fi
 
-    if [ -s /app/nezha/backup/backup.sql ]; then
-        sqlite3 /app/nezha/backup/restore.db  ".read /app/nezha/backup/backup.sql"
+    if [ -s ${DIR_NEZHA}/backup/backup.sql ]; then
+        sqlite3 ${DIR_NEZHA}/backup/restore.db  ".read ${DIR_NEZHA}/backup/backup.sql"
 
         supervisorctl stop nezha
-        mv /app/nezha/backup/restore.db /dashboard/data/sqlite.db
+        mv ${DIR_NEZHA}/backup/restore.db ${DIR_NEZHA}/data/sqlite.db
         supervisorctl start nezha
     fi
 fi

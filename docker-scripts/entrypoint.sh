@@ -11,9 +11,17 @@ DIR_CONFIG="/app/config"
 DIR_SCRIPTS="/app/scripts"
 
 JWT_SECRET=${JWT_SECRET:-"$(openssl rand -base64 48 | sed 's/[\+\/]/q/g')"}
-
 AGENT_SECRET=${AGENT_SECRET:-"$(openssl rand -base64 24 | sed 's/[\+\/]/q/g')"}
 AGENT_UUID=${AGENT_UUID:-"$(uuidgen)"}
+# NEZHA_DOMAIN
+# ADGUARD_USER
+# ADGUARD_PWD
+# NTFY_BASEURL
+# NTFY_WEBPUSH_EMAIL
+# NTFY_WEBPUSH_PUBKEY
+# NTFY_WEBPUSH_PRIKEY
+# GITHUB_REPO
+# AUTO_RESTORE
 
 # first run
 if [ ! -s /etc/supervisor.d/apps.ini ]; then
@@ -98,6 +106,10 @@ if [ ! -s /etc/supervisor.d/apps.ini ]; then
         -e "s#-caddy-cmd-#$CADDY_CMD#g" \
         -e "s#-ntfy-cmd-#$NTFY_CMD#g" \
         -i /etc/supervisor.d/apps.ini
+fi
+
+if [ ! -z "$AUTO_RESTORE" ]; then
+    ${DIR_SCRIPTS}/restore.sh "$GITHUB_REPO"
 fi
 
 # RUN freshrss

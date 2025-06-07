@@ -1,23 +1,22 @@
 #!/usr/bin/env sh
 
+DIR_NEZHA="/app/nezha"
+
 if [[ $1 ]]; then
 
-    if [ ! -e /app/nezha/backup ]; then
-        mkdir -p /app/nezha/backup
+    if [ ! -e ${DIR_NEZHA}/backup ]; then
+        mkdir -p ${DIR_NEZHA}/backup
     fi
 
-    if [ ! -e /app/nezha/backup/backup.sql ]; then
-        rm /app/nezha/backup/* /app/nezha/backup/.*
-        git clone $1 /app/nezha/backup
+    if [ ! -e ${DIR_NEZHA}/backup/backup.sql ]; then
+        rm ${DIR_NEZHA}/backup/* ${DIR_NEZHA}/backup/.*
+        git clone $1 ${DIR_NEZHA}/backup
     fi
 
-    sqlite3 /app/nezha/data/sqlite.db ".dump" > /app/nezha/backup/backup.sql
+    sqlite3 ${DIR_NEZHA}/data/sqlite.db ".dump" > ${DIR_NEZHA}/backup/backup.sql
 
-    cd /app/nezha/backup
-    git config user.name ${GITHUB_NAME}
-    git config user.email ${GITHUB_EMAIL}
-
-    git add .
-    git commit -m "Backup sqlite.db"
+    cd ${DIR_NEZHA}/backup && \
+    git add . && \
+    git commit -m "Dump sqlite.db to backup.sql" && \
     git push
 fi
